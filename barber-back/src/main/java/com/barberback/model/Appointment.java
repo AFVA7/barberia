@@ -1,5 +1,6 @@
 package com.barberback.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,11 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "hairdresser_id")
     private Hairdresser hairdresser;
-    //TODO: the date is in the moment when the appointment is created or to the future
+    //TODO: the date is at the moment when the appointment is created or to the future
+
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date date;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;

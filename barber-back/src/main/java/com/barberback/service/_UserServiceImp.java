@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class _UserServiceImp implements _UserService{
+public class _UserServiceImp implements IUserService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(LoggerFactory.class);
     @Autowired
@@ -82,6 +82,11 @@ public class _UserServiceImp implements _UserService{
             LOGGER.error("USER: there aren't users");
             return null;
         }
+    }
+     //TODO: maybe is possible that I don't need use this method, because customer, admin and employee are the owner of the relationship
+    @Override
+    public _User findUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
