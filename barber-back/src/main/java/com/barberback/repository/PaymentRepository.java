@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
     //TODO: create queries to fetch by status and method
-    Optional<Payment> findPaymentByStatus(String status);
-    Optional<Payment> findPaymentByMethod(String method);
+
+    Optional<Payment> findPaymentByPaymentStatus(String status);
+    Optional<Payment> findPaymentByPaymentMethod(String method);
 }

@@ -26,6 +26,7 @@ public class AppointmentDTOMapper implements Function<Appointment, AppointmentDT
                 customer(appointment.getCustomer()),
                 hairdresser(appointment.getHairdresser()),
                 appointment.getDate(),
+                appointment.getLastModification(),
                 appointment.getStatus(),
                 payment(appointment.getPayment())
         );

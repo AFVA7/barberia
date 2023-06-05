@@ -4,7 +4,8 @@ import java.util.Set;
 
 public record RecordDTOResponse(
         Long id,
-        Set<AppointmentDTOResponse> appointments,
-        CustomerDTOResponse customer
+        Set<AppointmentDTOResponse> appointments
+        //,
+        //CustomerDTOResponse customer
 ) {
 }

@@ -9,10 +9,11 @@ import java.util.Set;
 
 public interface IHairdresserService {
     public HairdresserDTOResponse save(HairdresserDTORequest hairdresserDTORequest);
-    public  HairdresserDTOResponse update(Long id, HairdresserDTORequest hairdresserDTORequest);
+    public  HairdresserDTOResponse update(HairdresserDTOResponse hairdresserDTOResponse);
     public HairdresserDTOResponse findById(Long id);
     public Hairdresser findHairdresserById(Long id);
     public Set<HairdresserDTOResponse> findAll();
     public boolean remove(Long id);
-    public boolean addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse);
+//    public boolean addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse);
+    public HairdresserDTOResponse addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse);
 }

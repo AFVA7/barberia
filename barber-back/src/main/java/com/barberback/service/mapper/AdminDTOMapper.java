@@ -12,6 +12,7 @@ public class AdminDTOMapper implements Function<Admin, AdminDTOResponse> {
         return new AdminDTOResponse(
                 admin.getId(),
                 admin.getName(),
+                admin.getLastName(),
                 admin.getPhone(),
                 admin.getEmail()
         );

@@ -67,15 +67,15 @@ public class PaymentServiceImp implements IPaymentService{
     }
 
     @Override
-    public PaymentDTOResponse update(Long id, PaymentDTORequest paymentDTORequest) {
+    public PaymentDTOResponse update(Long id, PaymentDTOResponse paymentDTOResponse) {
         Payment payment = paymentRepository.findById(id).orElse(null);
         if(payment!=null){
-            Customer c = customer(paymentDTORequest.customer().id());
+            Customer c = customer(paymentDTOResponse.customer().id());
             if(c!=null){
                 payment.setCustomer(c);
-                payment.setPaymentMethod(paymentMethod(paymentDTORequest.paymentMethod()));
-                payment.setPaymentStatus(paymentStatus(paymentDTORequest.paymentStatus()));
-                payment.setDate(paymentDTORequest.date());
+                payment.setPaymentMethod(paymentMethod(paymentDTOResponse.paymentMethod()));
+                payment.setPaymentStatus(paymentStatus(paymentDTOResponse.paymentStatus()));
+                payment.setDate(paymentDTOResponse.date());
                 LOGGER.info("PAYMENT: payment updated successfully");
                 return paymentDTOMapper.apply(paymentRepository.save(payment));
             }else{
@@ -125,6 +125,11 @@ public class PaymentServiceImp implements IPaymentService{
             return null;
 
         }
+    }
+
+    @Override
+    public Payment findPaymentById(Long id) {
+        return paymentRepository.findById(id).orElse(null);
     }
 
     @Override

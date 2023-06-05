@@ -34,11 +34,10 @@ public class RecordServiceImp implements IRecordService{
     public RecordDTOResponse save(RecordDTORequest recordDTORequest) {
         Record record = new Record(
                 null,
-                appointments(recordDTORequest.appointments()),
-                customer(recordDTORequest.customer().id())
+                appointments(recordDTORequest.appointments())
         );
         LOGGER.info("RECORD: record saved successfully");
-        return recordDTOMapper.apply(record);
+        return recordDTOMapper.apply(recordRepository.save(record));
     }
 
     @Override
@@ -54,6 +53,11 @@ public class RecordServiceImp implements IRecordService{
     }
 
     @Override
+    public Record findRecordById(Long id) {
+        return recordRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Set<RecordDTOResponse> findAll() {
         List<Record> records = recordRepository.findAll();
         if(records!=null){
@@ -66,7 +70,45 @@ public class RecordServiceImp implements IRecordService{
             return null;
         }
     }
+    @Override
+    public RecordDTOResponse addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
+        Record record = recordRepository.findById(id).orElse(null);
+        if(record!=null){
+            Appointment appointment = appointment(appointmentDTOResponse.id());
+            if(appointment!=null){
+                record.getAppointments().add(appointment);
+              //  record.addAppointment(appointment);
+                LOGGER.info("RECORD: appointment added successfully");
+                return recordDTOMapper.apply(recordRepository.save(record));
+            }else{
+                LOGGER.error("RECORD: the appointment doesn't exist, therefore is not possible add it to the record");
+                return null;
+            }
+        }else{
+            LOGGER.error("RECORD: the record doesn't exist, therefore is not possible add the appointment");
+            return null;
+        }
+    }
 
+    @Override
+    public RecordDTOResponse removeAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
+        Record record = recordRepository.findById(id).orElse(null);
+        if(record!=null){
+            Appointment appointment = appointment(appointmentDTOResponse.id());
+            if(appointment!=null){
+                record.getAppointments().remove(appointment);
+                //record.removeAppointment(appointment);
+                LOGGER.info("RECORD: appointment removed successfully");
+                return recordDTOMapper.apply(recordRepository.saveAndFlush(record));
+            }else{
+                LOGGER.error("RECORD: the appointment doesn't exist, therefore is not possible remove it to the record");
+                return null;
+            }
+        }else{
+            LOGGER.error("RECORD: the record doesn't exist, therefore is not possible remove the appointment");
+            return null;
+        }
+    }
     private Set<Appointment> appointments(Set<AppointmentDTOResponse> appointments){
         if(appointments!=null){
             return appointments.stream().map(appointmentDTOResponse -> {
@@ -82,62 +124,5 @@ public class RecordServiceImp implements IRecordService{
     private Appointment appointment(Long id){
         return iAppointmentService.findAppointmentById(id);
     }
-    @Override
-    public RecordDTOResponse addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
-        Record record = recordRepository.findById(id).orElse(null);
-        if(record!=null){
-            Appointment appointment = iAppointmentService.findAppointmentById(appointmentDTOResponse.id());
-            if(appointment!=null){
-                record.getAppointments().add(appointment);
-                LOGGER.info("RECORD: appointment added successfully");
-                return recordDTOMapper.apply(recordRepository.saveAndFlush(record));
-            }else{
-                LOGGER.error("RECORD: the appointment doesn't exist, therefore is not possible add it to the record");
-                return null;
-            }
-        }else{
-            LOGGER.error("RECORD: the record doesn't exist, therefore is not possible add the appointment");
-            return null;
-        }
-    }
 
-    @Override
-    public RecordDTOResponse removeAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
-        Record record = recordRepository.findById(id).orElse(null);
-        if(record!=null){
-            Appointment appointment = iAppointmentService.findAppointmentById(appointmentDTOResponse.id());
-            if(appointment!=null){
-                record.getAppointments().remove(appointment);
-                LOGGER.info("RECORD: appointment removed successfully");
-                return recordDTOMapper.apply(recordRepository.saveAndFlush(record));
-            }else{
-                LOGGER.error("RECORD: the appointment doesn't exist, therefore is not possible remove it to the record");
-                return null;
-            }
-        }else{
-            LOGGER.error("RECORD: the record doesn't exist, therefore is not possible remove the appointment");
-            return null;
-        }
-    }
-
-    @Override
-    public RecordDTOResponse updateCustomer(Long id, CustomerDTOResponse customerDTOResponse) {
-        Record record = recordRepository.findById(id).orElse(null);
-        if(record!=null){
-            Customer c = iCustomerService.findCustomerById(customerDTOResponse.id());
-            if(c!=null){
-                record.setCustomer(c);
-                recordRepository.saveAndFlush(record);
-                iCustomerService.changeRecord(c.getId(),record);
-                LOGGER.info("RECORD: record's customer changed successfully");
-                return recordDTOMapper.apply(record);
-            }else{
-                LOGGER.error("RECORD: the customer doesn't exist, therefore is not possible update it into the record");
-                return null;
-            }
-        }else{
-            LOGGER.error("RECORD: the record doesn't exist, therefore is not possible update the record's customer");
-            return null;
-        }
-    }
 }

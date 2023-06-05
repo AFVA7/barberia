@@ -5,13 +5,17 @@ insert into hairdresser (name,last_name,phone,email,employee_code) values ('Jim'
 insert into _user (username,pwd) values ('jon','jon123');
 insert into _user (username,pwd) values ('evelin','evelin123');
 insert into _user (username,pwd) values ('jim','jim123');
+insert into _user (username,pwd) values ('test','test123');
 
 insert into _user_roles (_user_id,roles) values(1,'ADMIN')
 insert into _user_roles (_user_id,roles) values(1,'CUSTOMER')
 insert into _user_roles (_user_id,roles) values(1,'EMPLOYEE')
 insert into _user_roles (_user_id,roles) values(2,'EMPLOYEE')
 insert into _user_roles (_user_id,roles) values(3,'CUSTOMER')
+insert into _user_roles (_user_id,roles) values(4,'ADMIN')
 
 update admin set user_id=1 where id=1;
 update hairdresser set user_id=2 where id=1;
 update customer set user_id=3 where id=1;
+insert into record default values;
+insert into appointment default values;

@@ -54,14 +54,14 @@ public class HairdresserServiceImp implements IHairdresserService{
     }
 
     @Override
-    public HairdresserDTOResponse update(Long id, HairdresserDTORequest hairdresserDTORequest) {
-        Hairdresser hairdresser = hairdresserRepository.findById(id).orElse(null);
+    public HairdresserDTOResponse update(HairdresserDTOResponse hairdresserDTOResponse) {
+        Hairdresser hairdresser = hairdresserRepository.findById(hairdresserDTOResponse.id())   .orElse(null);
         if(hairdresser!=null){
-            hairdresser.setName(hairdresserDTORequest.name());
-            hairdresser.setLastName(hairdresserDTORequest.lastName());
-            hairdresser.setPhone(hairdresserDTORequest.phone());
-            hairdresser.setEmail(hairdresserDTORequest.email());
-            hairdresser.setEmployeeCode(hairdresserDTORequest.employeeCode());
+            hairdresser.setName(hairdresserDTOResponse.name());
+            hairdresser.setLastName(hairdresserDTOResponse.lastName());
+            hairdresser.setPhone(hairdresserDTOResponse.phone());
+            hairdresser.setEmail(hairdresserDTOResponse.email());
+            hairdresser.setEmployeeCode(hairdresserDTOResponse.employeeCode());
             LOGGER.info("HAIRDRESSER: hairdresser updated successfully");
             return hairdresserDTOMapper.apply(hairdresserRepository.save(hairdresser));
         }else{
@@ -115,18 +115,16 @@ public class HairdresserServiceImp implements IHairdresserService{
     }
 
     @Override
-    public boolean addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
+    public HairdresserDTOResponse addAppointment(Long id, AppointmentDTOResponse appointmentDTOResponse) {
         Hairdresser hairdresser = hairdresserRepository.findById(id).orElse(null);
-        if(hairdresser!=null){
-            Appointment appointment = iAppointmentService.findAppointmentById(appointmentDTOResponse.id());
-            if(appointment!=null){
-            AppointmentDTOResponse response =iAppointmentService.changeHairdresser(appointmentDTOResponse.id(),hairdresserDTOMapper.apply(hairdresser));
-            return response!=null ? true:false;
-            }else{
-             return false;
-            }
+        Appointment a = iAppointmentService.findAppointmentById(appointmentDTOResponse.id());
+        if(hairdresser!=null && a!=null){
+            hairdresser.addAppointment(a);
+            LOGGER.info("HAIRDRESSER: appointment added successfully");
+            return hairdresserDTOMapper.apply(hairdresserRepository.save(hairdresser));
         }else {
-            return true;
+            LOGGER.info("HAIRDRESSER: the hairdresser or the appointment doesn't exist");
+            return null;
         }
     }
 }

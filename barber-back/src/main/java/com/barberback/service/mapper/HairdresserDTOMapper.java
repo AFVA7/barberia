@@ -4,12 +4,19 @@ import com.barberback.model.Appointment;
 import com.barberback.model.Hairdresser;
 import com.barberback.model.dto.AppointmentDTOResponse;
 import com.barberback.model.dto.HairdresserDTOResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 public class HairdresserDTOMapper implements Function<Hairdresser, HairdresserDTOResponse> {
+    @Autowired
+    private AppointmentDTOMapper appointmentDTOMapper;
+
     @Override
     public HairdresserDTOResponse apply(Hairdresser hairdresser) {
         return new HairdresserDTOResponse(
@@ -19,17 +26,19 @@ public class HairdresserDTOMapper implements Function<Hairdresser, HairdresserDT
                 hairdresser.getPhone(),
                 hairdresser.getEmail(),
                 hairdresser.getEmployeeCode(),
-                null
+                appointmentDTOResponseSet(hairdresser.getAppointments())
         );
     }
 
-    private Set<AppointmentDTOResponse> appointmentDTOResponseSet(Set<Appointment> appointments){
+    private Set<String> appointmentDTOResponseSet(Set<Appointment> appointments){
         if(appointments!=null){
-            //TODO: return appointmentsDTOResponse
-
+            Set<String> ids = new HashSet<>();
+            appointments.forEach(appointment -> {
+                ids.add(String.valueOf(appointment.getId()));
+            });
+            return ids;
         }else{
-            //TODO: return null
+            return null;
         }
-        return null;
     }
 }

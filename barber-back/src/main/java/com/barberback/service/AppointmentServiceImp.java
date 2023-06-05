@@ -1,13 +1,7 @@
 package com.barberback.service;
 
-import com.barberback.model.Appointment;
-import com.barberback.model.AppointmentStatus;
-import com.barberback.model.Customer;
-import com.barberback.model.Hairdresser;
-import com.barberback.model.dto.AppointmentDTORequest;
-import com.barberback.model.dto.AppointmentDTOResponse;
-import com.barberback.model.dto.CustomerDTOResponse;
-import com.barberback.model.dto.HairdresserDTOResponse;
+import com.barberback.model.*;
+import com.barberback.model.dto.*;
 import com.barberback.repository.AppointmentRepository;
 import com.barberback.service.mapper.AppointmentDTOMapper;
 import org.slf4j.Logger;
@@ -15,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +25,8 @@ public class AppointmentServiceImp implements IAppointmentService{
     private AppointmentDTOMapper appointmentDTOMapper;
     @Autowired
     private AppointmentRepository appointmentRepository;
+    @Autowired
+    private IPaymentService iPaymentService;
 
     @Override
     public AppointmentDTOResponse save(AppointmentDTORequest appointmentDTORequest) {
@@ -40,8 +37,8 @@ public class AppointmentServiceImp implements IAppointmentService{
             if(appointmentDTORequest.hairdresser()!=null)
                 appointment.setHairdresser(iHairdresserService.findHairdresserById(appointmentDTORequest.hairdresser().id()));
             appointment.setDate(appointmentDTORequest.date());
+            appointment.setLastModification(appointmentDTORequest.date()); //the last time it was update (it change every time)
             appointment.setStatus(status(appointmentDTORequest.status()));
-            //TODO: add payment
             return appointmentDTOMapper.apply(appointmentRepository.save(appointment));
 
         }else{
@@ -73,7 +70,7 @@ public class AppointmentServiceImp implements IAppointmentService{
         if(appointment!=null){
             appointment.setCustomer(iCustomerService.findCustomerById(appointmentDTORequest.customer().id()));
             appointment.setHairdresser(iHairdresserService.findHairdresserById(appointmentDTORequest.hairdresser().id()));
-            appointment.setDate(appointmentDTORequest.date());
+            appointment.setLastModification(new Date());
             appointment.setStatus(status(appointmentDTORequest.status()));
             return appointmentDTOMapper.apply(appointmentRepository.save(appointment));
         }else{
@@ -88,6 +85,7 @@ public class AppointmentServiceImp implements IAppointmentService{
             Hairdresser hairdresser = iHairdresserService.findHairdresserById(hairdresserDTOResponse.id());
             if(hairdresser!=null){
                 appointment.setHairdresser(hairdresser);
+                appointment.setLastModification(new Date());
                 LOGGER.info("APPOINTMENT: appointment's hairdresser changed successfully");
                 return appointmentDTOMapper.apply(appointmentRepository.saveAndFlush(appointment));
             }else{
@@ -107,6 +105,7 @@ public class AppointmentServiceImp implements IAppointmentService{
             Customer customer = iCustomerService.findCustomerById(customerDTOResponse.id());
             if(customer!=null){
                 appointment.setCustomer(customer);
+                appointment.setLastModification(new Date());
                 LOGGER.info("APPOINTMENT: appointment's customer changed successfully");
                 return appointmentDTOMapper.apply(appointmentRepository.saveAndFlush(appointment));
             }else{
@@ -120,6 +119,25 @@ public class AppointmentServiceImp implements IAppointmentService{
     }
 
     @Override
+    public AppointmentDTOResponse addPayment(Long id, PaymentDTOResponse paymentDTOResponse) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if(appointment!=null){
+            Payment payment = iPaymentService.findPaymentById(paymentDTOResponse.id());
+            if(payment!=null){
+                appointment.setPayment(payment);
+                appointment.setLastModification(new Date());
+                return appointmentDTOMapper.apply(appointmentRepository.saveAndFlush(appointment));
+            }else{
+                LOGGER.error("APPOINTMENT: the payment doesn't exist, therefore is not possible add it to the appointment");
+                return null;
+            }
+        }else{
+        LOGGER.error("APPOINTMENT: appointment doesn't exist, therefore is not possible add a payment");
+        return null;
+        }
+    }
+
+    @Override
     public AppointmentDTOResponse findById(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElse(null);
         if(appointment!=null){
@@ -129,6 +147,13 @@ public class AppointmentServiceImp implements IAppointmentService{
             LOGGER.error("APPOINTMENT: the appointment doesn't exist");
             return null;
         }
+    }
+
+    @Override
+    public Set<AppointmentDTOResponse> findAppointmentsByStatus(String status) {
+        return appointmentRepository.findAppointmentsByStatus(status).stream().map(appointment -> {
+            return appointmentDTOMapper.apply(appointment);
+        }).collect(Collectors.toSet());
     }
 
     @Override

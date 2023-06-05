@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class _UserServiceImp implements IUserService {
+public class UserServiceImp implements IUserService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(LoggerFactory.class);
     @Autowired
@@ -35,13 +35,18 @@ public class _UserServiceImp implements IUserService {
                     return Role.EMPLOYEE;
                 return null;
             }).collect(Collectors.toSet());
-            _User user = new _User(null,userDTORequest.username(), userDTORequest.pwd(), roles);
+            _User user = new _User();
+            user.setUsername(userDTORequest.username());
+            user.setPwd(userDTORequest.pwd());
+            user.setRoles(roles);
             LOGGER.info("USER: user created with roles");
-            return userDTOMapper.apply(user);
+            return userDTOMapper.apply(userRepository.save(user));
         }else{
-            _User user = new _User(null,userDTORequest.username(), userDTORequest.pwd(), null);
+            _User user = new _User();
+            user.setUsername(userDTORequest.username());
+            user.setPwd(userDTORequest.pwd());
             LOGGER.info("USER: user created without roles");
-            return userDTOMapper.apply(user);
+            return userDTOMapper.apply(userRepository.save(user));
         }
     }
 

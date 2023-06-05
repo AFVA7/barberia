@@ -1,5 +1,7 @@
 package com.barberback.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,15 +11,13 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
 @Entity
 public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointments_id")
     private Set<Appointment> appointments;
-    @OneToOne(mappedBy = "record")
-    private Customer customer;
-
 }

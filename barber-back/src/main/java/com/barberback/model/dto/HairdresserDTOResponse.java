@@ -9,6 +9,6 @@ public record HairdresserDTOResponse(
         String phone,
         String email,
         int employeeCode,
-        Set<AppointmentDTOResponse> appointments
+        Set<String> appointments
 ) {
 }

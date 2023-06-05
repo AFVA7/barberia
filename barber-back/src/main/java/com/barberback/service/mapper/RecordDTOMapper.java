@@ -24,13 +24,14 @@ public class RecordDTOMapper implements Function<Record, RecordDTOResponse> {
     public RecordDTOResponse apply(Record record) {
         return new RecordDTOResponse(
                 record.getId(),
-                appointment(record.getAppointments()),
-                customer(record.getCustomer())
+                appointment(record.getAppointments())
+                //,
+                //customer(record.getCustomer())
         );
     }
-    private CustomerDTOResponse customer(Customer customer){
+    /*private CustomerDTOResponse customer(Customer customer){
         return customer!=null ? customerDTOMapper.apply(customer) : null;
-    }
+    }*/
     private Set<AppointmentDTOResponse> appointment(Set<Appointment> appointments){
         if(appointments!=null){
             return appointments.stream().map(appointment -> {

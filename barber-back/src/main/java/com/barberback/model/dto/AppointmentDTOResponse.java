@@ -9,6 +9,7 @@ public record AppointmentDTOResponse(
         CustomerDTOResponse customer,
         HairdresserDTOResponse hairdresser,
         Date date,
+        Date lastModification,
         AppointmentStatus status,
         PaymentDTOResponse paymentDTOResponse
 ) {

@@ -44,19 +44,19 @@ public class AdminServiceImp implements IAdminService {
     }
 
     @Override
-    public AdminDTOResponse update(Long id,AdminDTORequest adminDTORequest) {
+    public AdminDTOResponse update(Long id,AdminDTOResponse adminDTOResponse) {
         Admin adminToUpdate = adminRepository.findById(id).orElse(null);
         if(adminToUpdate==null){
             LOGGER.error("ADMIN: the admin to update doesn't exist");
             return null;
         }else{
-         adminToUpdate.setName(adminDTORequest.name());
-         adminToUpdate.setLastName(adminDTORequest.lastName());
-         adminToUpdate.setPhone(adminDTORequest.phone());
-         adminToUpdate.setEmail(adminDTORequest.email());
+         adminToUpdate.setName(adminDTOResponse.name());
+         adminToUpdate.setLastName(adminDTOResponse.lastName());
+         adminToUpdate.setPhone(adminDTOResponse.phone());
+         adminToUpdate.setEmail(adminDTOResponse.email());
          Admin adminUpdated = adminRepository.save(adminToUpdate);
          LOGGER.info("ADMIN: admin updated successfully");
-         return adminDTOMapper.apply(adminUpdated);
+         return adminDTOMapper.apply(adminRepository.save(adminUpdated));
         }
     }
 

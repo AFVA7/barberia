@@ -1,6 +1,6 @@
 package com.barberback.model.dto;
 
-public record HairdresserDTORequest(
+public record  HairdresserDTORequest(
         String name,
         String lastName,
         String phone,
